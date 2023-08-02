@@ -1,0 +1,19 @@
+@startuml
+
+class JSONSerializer {
+    # SerializeConfig config
+    # SerializeWriter out
+}
+
+class SerializeConfig {
+    # ASMSerializerFactory asmFactory
+}
+
+class SerializeWriter {
+    # ThreadLocal<char[]> bufLocal
+    # ThreadLocal<byte[]> bytesBufLocal
+}
+
+JSONSerializer <-- SerializeConfig
+JSONSerializer <-- SerializeWriter
+@enduml
