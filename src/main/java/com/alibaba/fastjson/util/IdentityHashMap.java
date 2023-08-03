@@ -76,6 +76,7 @@ public class IdentityHashMap<K, V> {
     public boolean put(K key, V value) {
         final int hash = System.identityHashCode(key);
         final int bucket = hash & indexMask;
+//        final int bucket =0;
 
         for (Entry<K, V> entry = buckets[bucket]; entry != null; entry = entry.next) {
             if (key == entry.key) {

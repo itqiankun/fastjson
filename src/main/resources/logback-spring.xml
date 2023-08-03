@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <contextName>${HOSTNAME}</contextName>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <property name="LOG_PATH" value="${user.home}"/>
+    <property name="LOG_FILE" value="${LOG_PATH}/application.log"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%clr(%-5p)|%tid|%t|%-36c{36}|%m%n"/>
+
+    <appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.${HOSTNAME}.log</file>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${PATTERN}</pattern>
+            </layout>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.${HOSTNAME}.log</fileNamePattern>
+            <!-- 超过30天的备份文件会被删除 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${PATTERN}</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <!--  skywalking采集日志  -->
+    <appender name="SKYWALKING" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.TraceIdPatternLogbackLayout">
+                <pattern>${PATTERN}</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <!-- 全局异步设置 -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 设置异步Appender的队列大小，建议设置为合理的值 -->
+        <queueSize>512</queueSize>
+        <appender-ref ref="logfile"/>
+    </appender>
+
+    <springProfile name="test,dev,local,gray,hejb,mqk">
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC"/>
+            <appender-ref ref="SKYWALKING"/>
+        </root>
+        <logger name="RocketmqRemoting" level="warn"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC"/>
+            <appender-ref ref="SKYWALKING"/>
+        </root>
+        <logger name="RocketmqRemoting" level="INFO"/>
+    </springProfile>
+</configuration>

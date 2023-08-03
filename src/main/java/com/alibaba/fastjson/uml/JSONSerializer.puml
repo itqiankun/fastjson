@@ -1,0 +1,38 @@
+@startuml
+
+interface ObjectSerializer {
+      + void write()
+}
+
+class JavaBeanSerializer {
+    # SerializeBeanInfo beanInfo
+
+}
+
+class SerializeBeanInfo {
+    # Class<?> beanType
+    # FieldInfo[] fields
+}
+
+class JSONSerializer {
+    # SerializeConfig config
+    # SerializeWriter out
+    + void write(Object object)
+}
+
+class SerializeWriter {
+    # ThreadLocal<char[]> bufLocal
+    # ThreadLocal<byte[]> bytesBufLocal
+}
+
+class SerializeConfig {
+    # ASMSerializerFactory asmFactory
+    # IdentityHashMap<Type, ObjectSerializer> serializers
+}
+
+JSONSerializer <-- SerializeConfig
+JSONSerializer <-- SerializeWriter
+JavaBeanSerializer  ..|> ObjectSerializer
+SerializeBeanInfo --> JavaBeanSerializer 
+ObjectSerializer --> SerializeConfig
+@enduml

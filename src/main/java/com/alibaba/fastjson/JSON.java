@@ -69,7 +69,7 @@ public abstract class JSON implements JSONStreamAware, JSONAware {
     static final SerializeFilter[] emptyFilters         = new SerializeFilter[0];
     public static String           DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static int              DEFAULT_PARSER_FEATURE;
-    public static int              DEFAULT_GENERATE_FEATURE;
+    public static int              DEFAULT_GENERATE_FEATURE;   // 值是3089，记住它就是一个int类型的值就好了
 
     private static final ConcurrentHashMap<Type, Type> mixInsMapper = new ConcurrentHashMap<Type, Type>(16);
     
